@@ -1,7 +1,11 @@
 package com._xtech.config;
 
+import com._xtech.serviceImpl.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
@@ -16,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -32,19 +39,15 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService(){
-        UserDetails user = User.builder()
-                .username("user123")
-                .password("$2a$12$mF3dcYikIHSMh.WpWeXPleT2NaqFo19y9e2z5OSM0aFvGinLy/RQS")
-                .roles("USER")
-                .build();
+        return userService;
+    }
 
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("$2a$12$Fe0IJyCSeoMGABIFzpnSTOLP8JZkc2hfu4EyVJ1dMeRRxvNL0sVkO")
-                .roles("ADMIN","USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user,admin);
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
     }
 
     @Bean
