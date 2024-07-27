@@ -1,6 +1,7 @@
 package com._xtech.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,12 +19,25 @@ public class User {
     private Long id;
 
     @NotNull
-    @NotBlank(message = "username cannot be blank")
+    @Column(nullable = false, unique = true)
+    @NotBlank(message = "Username is mandatory")
     private String username;
 
     @NotNull
-    @NotBlank(message = "password cannot be blank")
+    @Column(nullable = false)
+    @NotBlank(message = "Password is mandatory")
     private String password;
+
+
+    @NotNull
+    @Column(nullable = false, unique = true)
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is mandatory")
+    private String email;
+
+    @NotNull
+    @NotBlank(message = "Full name is mandatory")
+    private String fullName;
 
     @NotNull
     @NotBlank(message = "role cannot be blank")
